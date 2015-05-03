@@ -1,0 +1,10 @@
+/*
+Styles pour les projets
+*/
+
+#calendrier .project {
+  position: absolute;
+  width:    100%;
+  height:   20px;
+  border:   1px solid green;
+}

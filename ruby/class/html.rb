@@ -9,6 +9,19 @@ class HtmlDocument
   
   OUTPUT_FOLDER = File.join('.', 'output')
   
+  class << self
+    
+    ##
+    #
+    # Hauteur pour le projet courant
+    #
+    def next_height_for_project
+      @current_height_project ||= -59 # pour commencer à 1
+      @current_height_project += 60
+    end
+    
+  end # << self
+  
   attr_accessor :body_content
   
   # Retourne le texte +str+ dans un div avec les attributs +attrs+
@@ -51,7 +64,9 @@ class HtmlDocument
     <<-HTML
 <body>
   <div><a href="todoist://">Ouvrir Todoist</a></div>
-  #{body_content}
+  <div id='calendrier'>
+    #{body_content}
+  </div>
 </body>
     HTML
   end
@@ -60,8 +75,15 @@ class HtmlDocument
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <title>#{title}</title>
+  #{css}
 </head>
     HTML
+  end
+  
+  def css
+    Dir["./data/output/html/**/*.css"].collect do |p|
+      "<link rel='stylesheet' href='.#{p}' type='text/css' media='screen'>"
+    end.join("\n")
   end
   
   # ---------------------------------------------------------------------

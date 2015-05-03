@@ -62,7 +62,7 @@ class Todoist
         # Sortie HTML
         Todoist::projects.collect do |pid, projet|
           next if projet.indent > 1
-          requete.doc_html.div( projet.html_output, class: 'projet' )
+          projet.to_html
         end.join("\n")
       end
       

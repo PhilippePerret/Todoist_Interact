@@ -31,6 +31,11 @@ class Todoist
     attr_accessor :children
     # Array des instances de tache (Todoist::Project::Tache)
     attr_accessor :taches
+    # {Fixnum} Hauteur HTML du projet (en pixels)
+    attr_accessor :html_height
+    # {Fixnum} Décalage horizontal de la tache courante (en train
+    # d'être affichée)
+    attr_accessor :html_current_hoffset
     
     def initialize data = nil
       dispatch data unless data.nil?
@@ -40,17 +45,23 @@ class Todoist
     #
     # Code HTML de sortie du projet
     #
-    def html_output
+    def to_html
+      @html_height          = HtmlDocument::next_height_for_project
+      debug "Hauteur du projet #{name} : #{@html_height}"
+      @html_current_hoffset = 0
       o = ""
       o << name
       o << "Parent : #{parent.name}" unless parent.nil?
       o << "Enfants : #{children.collect{|c| c.name}.join(', ')}" unless children.nil?
       unless taches.nil?
         taches.each do |tache|
-          o << "<div>#{tache.echeance_sec} #{tache.content}</div>"
+          debug "Courant hoffset pour la tache #{tache.content} : #{@html_current_hoffset}"
+          next if tache.due_date.nil?
+          next if tache.retard? # passer les taches en retard
+          o << tache.to_html
         end
       end
-      return o
+      return "<div class='project' style='top:#{html_height}px'>#{o}</div>"
     end
     
     ##

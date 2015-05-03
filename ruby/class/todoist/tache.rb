@@ -40,6 +40,15 @@ class Todoist
         variable_volatiles_set
       end
       
+      ##
+      #
+      # Retourne true si la date d'échéance de la tache est
+      # dépassée
+      #
+      def retard?
+        @is_retard ||= echeance_sec < Time.now.to_i
+      end
+      
       def variable_volatiles_set
         
         ##

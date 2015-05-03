@@ -1,0 +1,14 @@
+/*
+Styles pour les taches
+*/
+
+#calendrier .tache {
+  position: absolute;
+  overflow: hidden; 
+  border: 1px solid red;
+  height: 20px;
+}
+#calendrier .tache:hover {
+  overflow: visible;
+  height:auto;
+}

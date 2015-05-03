@@ -1,0 +1,9 @@
+/*
+Styles pour le calendrier
+*/
+
+div#calendrier {
+  position: relative;
+  border: 1px solid black;
+  width: 1200px;
+}
