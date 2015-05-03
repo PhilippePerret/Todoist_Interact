@@ -12,15 +12,9 @@ class Requete
     doc = HtmlDocument::new
     @doc_html = doc
     
-    ## Résultat de la requête
-    r = result
-    
-    unless r.nil?
-      ## Extrait juste les éléments voulus
-      doc.body_content = body_content_by_type
-    else
-      doc.body_content = output_on_error
-    end
+    ## Extrait juste les éléments voulus
+    doc.body_content = body_content_by_type
+
     ## Fabrique le fichier HTML
     doc.write
     
@@ -35,13 +29,18 @@ class Requete
   # de sortie définis
   #
   def body_content_by_type
-    debug result.pretty_inspect
+    b = ""
     case params[:type].first
     when :projects
-      Todoist::Project::html_body_content self
+      b << Todoist::Project::html_body_content(self)
     else
-      doc_html.div("Ce contenu n'est pas encore traité")
+      b << doc_html.div("Ce contenu n'est pas encore traité")
     end
+  rescue Exception => e
+    @error = e
+    return output_on_error
+  else
+    return b
   end
   
   ##
@@ -49,7 +48,7 @@ class Requete
   # Code body retourné en cas d'erreur
   #
   def output_on_error
-    doc.div(error.message) + doc.div(error.backtrace.collect{|e| doc.div(e)}.join("\n"))
+    doc_html.div(error.message) + doc_html.div(error.backtrace.collect{|e| doc_html.div(e)}.join("\n"))
   end
   
 end

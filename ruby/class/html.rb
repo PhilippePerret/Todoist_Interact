@@ -50,6 +50,7 @@ class HtmlDocument
   def body
     <<-HTML
 <body>
+  <div><a href="todoist://">Ouvrir Todoist</a></div>
   #{body_content}
 </body>
     HTML

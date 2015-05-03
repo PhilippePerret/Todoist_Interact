@@ -6,6 +6,7 @@ Pour le traitement d'une requête cUrl
 
 =end
 
+require 'date'
 require 'json'
 require 'securerandom' # Pour générer les UUID
 

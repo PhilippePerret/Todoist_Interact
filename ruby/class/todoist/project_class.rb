@@ -8,9 +8,22 @@ Méthodes de classe
 
 =end
 class Todoist
+  
+  class << self # Todoist
+    ## Tous les projets courants
+    ## En clé, leur identifiant, en valeur l'instance Todoist::Project du 
+    ## projet
+    attr_accessor :projects
+  end # << self Todoist
+  
   class Project
     
     class << self
+      
+      ##
+      ## La requête courante
+      ##
+      attr_reader :requete
       
       ##
       #
@@ -19,14 +32,54 @@ class Todoist
       # +requete+ Instance Requete de la requête qui a récupéré les projets
       #
       def html_body_content requete
-        projets = requete.result[:Projects].collect{ |data_projet| new data_projet }
-        apparentize projets
         
+        ##
+        ## On donne à connaitre la requête
+        ##
+        @requete = requete
+        
+        ##
+        ## Si les types d'objet ne contiennent pas les tâches, il faut les
+        ## ajouter avant d'appeler la requête
+        ##
+        requete.params[:type] << :items unless requete.params[:type].include? :items
+        
+        ## Pour voir
+        # debug requete.result.pretty_inspect
+        
+        ##
+        ## On prend les projets de la requête pour les transformer en instances
+        ## Todoist::Project et peupler Todoist::projects
+        ##
+        peuple
+        
+        ##
+        ## On prend les tâches pour peupler les données
+        ## On ajoute les tâches aux projets, etc.
+        ##
+        Todoist::Project::Tache::peuple requete
+                
         # Sortie HTML
-        projets.collect do |projet|
+        Todoist::projects.collect do |pid, projet|
           next if projet.indent > 1
           requete.doc_html.div( projet.html_output, class: 'projet' )
         end.join("\n")
+      end
+      
+      ##
+      #
+      # Peuple les projets courant, c'est-à-dire :
+      #   - crée des instances Todoist::Project
+      #   - peuple la donnée Todoist::projects
+      #   - crée les parentés entre les projets (appartenances)
+      #
+      def peuple
+        Todoist::projects = {} 
+        requete.result[:Projects].collect do |data_projet| 
+          p = new data_projet
+          Todoist::projects.merge! p.id => p
+        end
+        apparentize
       end
     
       ##
@@ -39,12 +92,10 @@ class Todoist
       # Cette méthode de classe permet d'ajouter une propriété au projet
       # définissant son parent et ses enfants
       #
-      # +projets+   Liste des instances Todoist::Project des projets
-      #
-      def apparentize projets
+      def apparentize
         current_indent = 1
         current_projet = { 1 => nil, 2 => nil, 3 => nil, 4 => nil }
-        projets.sort_by{|p| p.item_order }.each do |projet|
+        Todoist::projects.sort_by{|pid, p| p.item_order }.each do |pid, projet|
 
           ## Tous les projets courants de niveau supérieur doivent être
           ## remis à nil

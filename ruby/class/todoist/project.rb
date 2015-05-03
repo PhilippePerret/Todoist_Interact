@@ -29,6 +29,8 @@ class Todoist
     attr_accessor :parent
     # Instances Todoist::Project des enfants (if any)
     attr_accessor :children
+    # Array des instances de tache (Todoist::Project::Tache)
+    attr_accessor :taches
     
     def initialize data = nil
       dispatch data unless data.nil?
@@ -43,12 +45,29 @@ class Todoist
       o << name
       o << "Parent : #{parent.name}" unless parent.nil?
       o << "Enfants : #{children.collect{|c| c.name}.join(', ')}" unless children.nil?
+      unless taches.nil?
+        taches.each do |tache|
+          o << "<div>#{tache.echeance_sec} #{tache.content}</div>"
+        end
+      end
       return o
     end
     
     ##
     #
-    # Ajoute un enfant
+    # Ajoute une tache au projet (peuplement)
+    #
+    # +tache+ instance Todoist::Project::Tache de la tâche à 
+    # ajouter au projet
+    #
+    def add_tache tache
+      @taches ||= []
+      @taches << tache
+    end
+    
+    ##
+    #
+    # Ajoute un projet enfant
     #
     # +projet+ Instance Todoist::Project du projet enfant
     #
