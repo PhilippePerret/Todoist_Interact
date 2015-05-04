@@ -46,7 +46,7 @@ class Todoist
       # dépassée
       #
       def retard?
-        @is_retard ||= echeance_sec < Time.now.to_i
+        @is_retard ||= echeance_sec < HtmlDocument::Cal::now
       end
       
       def variable_volatiles_set
@@ -58,7 +58,7 @@ class Todoist
         ##
         unless due_date.nil? # tache sans échéance
           @echeance = Date::parse(due_date)
-          @echeance_sec = @echeance.to_time.to_i
+          @echeance_sec = @echeance.to_time.debut_lendemain.to_i
         end
       end
       

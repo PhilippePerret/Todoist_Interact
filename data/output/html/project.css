@@ -3,8 +3,15 @@ Styles pour les projets
 */
 
 #calendrier .project {
-  position: absolute;
   width:    100%;
-  height:   20px;
-  border:   1px solid green;
+  padding: 1px 12px;
+}
+
+#calendrier .project .project_name {
+  background-color: #d0ffd0;
+  color: #008F00;
+  max-height:   20px;
+  font-family: Arial;
+  font-size: medium;
+  padding-left: 7px;
 }

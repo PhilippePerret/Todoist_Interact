@@ -66,6 +66,7 @@ class HtmlDocument
   <div><a href="todoist://">Ouvrir Todoist</a></div>
   <div id='calendrier'>
     #{body_content}
+    <div style="clear:both"></div>
   </div>
 </body>
     HTML

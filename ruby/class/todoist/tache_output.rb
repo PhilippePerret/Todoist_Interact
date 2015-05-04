@@ -7,19 +7,12 @@ class Todoist
 class Project
 class Tache
   
-  COLOR_BY_PRIORITY = {
-    1 =>    'transparent',
-    2 =>    'cyan',
-    3 =>    'blue',
-    4 =>    'red'
-  }
-  
   ##
   #
   # Code HTML d'affichage de la tache
   #
   def to_html
-    "<div class='tache' style='#{html_style}'>#{content}</div>"
+    "<div class='tache priority#{priority}' style='#{html_style}'>#{content}</div>"
   end
   
   ##
@@ -28,10 +21,9 @@ class Tache
   #
   def html_style
     sty = []
-    sty << "top:21px"
-    sty << "background-color:#{COLOR_BY_PRIORITY[priority]}"
+    # sty << "top:21px"
     unless due_date.nil?
-      sty << "left:#{html_left}px"
+      sty << "margin-left:#{html_left}px"
       sty << "width:#{html_width}px"
     else
       
@@ -39,13 +31,23 @@ class Tache
     sty.join(';')
   end
   
+  ##
+  #
+  # Décalage gauche de la tache
+  #
+  # Soit elle part en même temps que la dernière tache du projet courant,
+  # soit elle est au bout.
+  #
   def html_left
-    @html_left ||= project.html_current_hoffset
+    @html_left ||= begin
+      project.html_current_hoffset
+    end
   end
   def html_width
     @html_width ||= begin
-      hpos = HtmlDocument::Cal::hpos(echeance_sec)
-      w = hpos - project.html_current_hoffset
+      full_width = HtmlDocument::Cal::hpos( echeance_sec )
+      full_width = 4 if full_width < 4
+      w = full_width - project.html_current_hoffset
       project.html_current_hoffset += w
       w
     end

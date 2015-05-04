@@ -46,24 +46,60 @@ class Todoist
     # Code HTML de sortie du projet
     #
     def to_html
-      @html_height          = HtmlDocument::next_height_for_project
-      debug "Hauteur du projet #{name} : #{@html_height}"
+      
       @html_current_hoffset = 0
-      o = ""
-      o << name
-      o << "Parent : #{parent.name}" unless parent.nil?
-      o << "Enfants : #{children.collect{|c| c.name}.join(', ')}" unless children.nil?
+      taches_html = ""
       unless taches.nil?
         taches.each do |tache|
-          debug "Courant hoffset pour la tache #{tache.content} : #{@html_current_hoffset}"
           next if tache.due_date.nil?
+          # TODO: Plus tard, il ne faudra pas passer les taches en retard mais
+          # les mettre dans un style en exergue (rouge)
           next if tache.retard? # passer les taches en retard
-          o << tache.to_html
+          taches_html << tache.to_html
+          incremente_taches_sorties
         end
       end
-      return "<div class='project' style='top:#{html_height}px'>#{o}</div>"
+      
+      ##
+      ## Code retourné
+      ##
+      full_code_html = "<div class='project' style=''>" +
+        "<div class='project_name'>#{name}</div>" +
+        "<div class='taches'>#{taches_html}</div>" +
+        children_as_html +
+      "</div>"
+      
+      ##
+      ## On retourne soit le code HTML construit, soit un code
+      ## vide si le projet et ses sous-projets ne contiennent aucune
+      ## tache à traiter
+      ##
+      if @nombre_taches.to_i > 0
+        full_code_html
+      else
+        ""
+      end
     end
     
+    ##
+    #
+    # Méthode qui incrémente le nombre de taches de ce projet et
+    # de son projet supérieur (if any)
+    #
+    def incremente_taches_sorties
+      @nombre_taches ||= 0
+      @nombre_taches += 1
+      parent.incremente_taches_sorties unless parent.nil? # opération en chaine
+    end
+    
+    ##
+    #
+    # Retourne le code HTML des projets enfants (if any)
+    #
+    def children_as_html
+      return "" if children.nil?
+      children.collect{ |sp| sp.to_html }.join
+    end
     ##
     #
     # Ajoute une tache au projet (peuplement)

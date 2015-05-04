@@ -3,7 +3,11 @@ Styles pour le calendrier
 */
 
 div#calendrier {
-  position: relative;
   border: 1px solid black;
+  padding: 12px 8px;
   width: 1200px;
+  height: 400px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
