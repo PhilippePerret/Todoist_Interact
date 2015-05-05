@@ -30,7 +30,8 @@ class Requete
     :reminders      => {},
     :daily_orders   => {},
     :labels         => {},
-    :filters        => {}
+    :filters        => {},
+    :colors         => {}
   }
   
   class << self
